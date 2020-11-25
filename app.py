@@ -7,7 +7,8 @@ import math
 import random
 import os
 import numpy as np
-from sklearn import preprocessing, cross_validation, svm
+from sklearn import preprocessing, svm
+from sklearn.model_selection import cross_validate,train_test_split,cross_val_score
 from sklearn.linear_model import LinearRegression
 
 if 'ON_HEROKU' in os.environ:
@@ -42,7 +43,7 @@ if 'ON_HEROKU' in os.environ:
 @app.route('/getstockdata/')
 def getStockData():
     stock = request.args.get('stock', default=None, type=None)
-    quandl.ApiConfig.api_key = "qWcicxSctVxrP9PhyneG"
+    quandl.ApiConfig.api_key = "Hx7KnDXetdVr8LNoxHiG"
     allData = quandl.get('WIKI/'+stock)
     dataLength = 251
     allDataLength = len(allData)
@@ -73,7 +74,10 @@ def getStockData():
     mlData = mlData[:-dataLength]
     y = np.array(mlData['label'])
 
-    X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=0.3)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,random_state=123)
+
+#    rf=RandomForestClassifier(max_depth=8,n_estimators=5)
+#    rf_cv_score=cross_val_score(estimator=rf,X=xtrain,y=xtest,cv=5)
 
     clf = LinearRegression()
     clf.fit(X_train, y_train)
